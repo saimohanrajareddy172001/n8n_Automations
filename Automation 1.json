@@ -1,0 +1,190 @@
+{
+  "name": "Automation 1",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Sai Training Center",
+        "formDescription": "Here you will learn about n8n automation",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Type your Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Options",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "n8n automation"
+                  },
+                  {
+                    "option": "n8n with AI"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1ef0f3be-a7b7-4bc1-8d3d-5852001feee0",
+      "name": "On form submission",
+      "webhookId": "34893348-1122-4552-ae23-497e32196e09",
+      "notes": "My First Form"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1CS0_7Ji2-B4ffX1YEdCuGhvpVpvTCbrzgkpi8qWx9T8",
+          "mode": "list",
+          "cachedResultName": "New Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CS0_7Ji2-B4ffX1YEdCuGhvpVpvTCbrzgkpi8qWx9T8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CS0_7Ji2-B4ffX1YEdCuGhvpVpvTCbrzgkpi8qWx9T8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Options": "={{ $json.Options }}",
+            "Time": "={{ $json.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Options",
+              "displayName": "Options",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cd134065-1dba-4799-9579-65c398a2a03c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4rhhFzZh1lk4KoaF",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "My First Sheet"
+    },
+    {
+      "parameters": {
+        "sendTo": "aiwithsai17@gmail.com",
+        "subject": "new leads",
+        "emailType": "text",
+        "message": "=hi Here you can see new leads Name: {{ $json.Name }} Options :{{ $json.Options }} Time :{{ $json.Time }}",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e7e368c8-6ee6-4523-b0fa-1cf54509af32",
+      "name": "Send a message",
+      "webhookId": "925c378d-0d12-47cc-9b93-d4c1ffaa3bde",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZA3wdnUotCQrs9Bq",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "11b22968-9466-41b3-a7c9-4c363fb38a00",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0bb39905ed091b91aecb578ceba2e71f50cb89c3c01a1626da6f6cba07962b92"
+  },
+  "id": "FHAxSO0jixSBvdre",
+  "tags": [
+    {
+      "createdAt": "2025-07-30T05:22:26.949Z",
+      "updatedAt": "2025-07-30T05:22:26.949Z",
+      "id": "3OYEBT9dmrjQXybY",
+      "name": "form automation"
+    }
+  ]
+}
