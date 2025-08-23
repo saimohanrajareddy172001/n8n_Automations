@@ -1,0 +1,179 @@
+{
+  "name": "Automation_3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4baf9f16-a7fd-496b-9a53-4346545efbe2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "mohanrajareddy1721@gmail.com",
+          "mode": "list",
+          "cachedResultName": "mohanrajareddy1721@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{$today.plus({ days: 1 })}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5d905327-e37c-43c7-b186-95f3c66137be",
+      "name": "Get many events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "rFWxN0jrOYT765bX",
+          "name": "Google Calendar account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=39.0997&longitude=-94.5786&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America%2FChicago",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "4b2fe2d9-7c60-4a73-afbd-8383620ad92a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "6990736358",
+        "text": "={{$json.text}}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "ca7d1f29-061d-4bc8-b3df-72c115c035ea",
+      "name": "Send a text message",
+      "webhookId": "bf276e99-cd1c-4152-81c9-3d9f51b9cb99",
+      "credentials": {
+        "telegramApi": {
+          "id": "yR6oUGUH7jnOuytz",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6a1a576-a2ba-4c03-b860-4f4f8f5dc369",
+              "name": "text",
+              "value": "={{\n(() => {\n  const w   = $json || {};\n  const cur = w.current || {};\n  const d   = w.daily   || {};\n  const first = a => (Array.isArray(a) && a.length ? a[0] : 0);\n\n  const nowF  = Math.round(cur.temperature_2m ?? 0);\n  const feels = Math.round(cur.apparent_temperature ?? nowF);\n  const wind  = Math.round(cur.wind_speed_10m ?? 0);\n  const hi    = Math.round(first(d.temperature_2m_max));\n  const lo    = Math.round(first(d.temperature_2m_min));\n  const rain  = Math.round(first(d.precipitation_probability_max));\n\n  // Calendar events\n  const evts = $items(\"Get many events\") || [];\n  const fmt = iso => !iso ? '' : new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});\n  const todayList = evts.length\n    ? evts.map(j => {\n        const title = j.json.summary || j.json.title || 'Event';\n        const start = (j.json.start?.dateTime || j.json.start?.date) ?? '';\n        return `• ${title} — ${fmt(start)}`;\n      }).join('\\n')\n    : '• No events today';\n\n  const dateStr = new Date().toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});\n  return `🌤️ *Daily Brief — ${dateStr}*\nNow: ${nowF}°F (feels ${feels}°) • Wind ${wind} mph\nToday: High ${hi}° / Low ${lo}° • Rain ${rain}%\n\n*Today’s Calendar:*\n${todayList}`;\n})()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "7b1986e1-87d1-4538-a8dc-92172034308c",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cf9d0661-6969-40de-8881-f600b465683c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0bb39905ed091b91aecb578ceba2e71f50cb89c3c01a1626da6f6cba07962b92"
+  },
+  "id": "AnTcxTAB1DOR2b1Q",
+  "tags": [
+    {
+      "createdAt": "2025-08-21T23:59:09.388Z",
+      "updatedAt": "2025-08-21T23:59:09.388Z",
+      "id": "NMnSdRlwbe0PCiUE",
+      "name": "Telegram_weather"
+    }
+  ]
+}
